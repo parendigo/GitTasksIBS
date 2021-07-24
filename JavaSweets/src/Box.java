@@ -143,7 +143,6 @@ public class Box implements Manageable{
                 name = entry.getKey();
             }
         }
-        System.out.println(name);
         if (name != null) {
             addSweet(tmpSweets.get(name));
         }
