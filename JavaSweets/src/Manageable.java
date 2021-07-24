@@ -6,4 +6,6 @@ public interface Manageable {
     void printBoxWeight();
     void printBoxPrice();
     int findSweet(String name);
+    void changeBoxWeight (int weight);
+    void changeBoxPrice (int price);
 }

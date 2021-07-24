@@ -5,10 +5,14 @@ public class Main {
         Box box = new Box();
         box.addSweet(new Banana(1, "yellow", 230, 213));
         box.addSweet(new Banana(2, "green", 200, 245));
-        box.addSweet(new Coffee(3, "black", 100, 310));
+        box.addSweet(new Coffee(3, "black100/310", 100, 310));
+        box.addSweet(new Coffee(3, "black101/310", 101, 310));
+        box.addSweet(new Coffee(3, "black99/310", 99, 310));
         box.addSweet(new Coffee(4, "brown", 150, 212));
         box.addSweet(new Coconut(5, "solid", 250, 730));
-        box.addSweet(new Coconut(6, "chipped", 400, 120));
+        box.addSweet(new Coconut(6, "chipped100/120", 100, 120));
+        box.addSweet(new Coconut(6, "chipped100/100", 100, 100));
+        box.addSweet(new Coconut(6, "chipped100/200", 100,  200));
 
         // Печатаем содержимое коробки и окончательные вес и цену
         System.out.println("Печатаем содержимое коробки и окончательные вес и цену\n");
@@ -36,8 +40,24 @@ public class Main {
         System.out.println();
 
         // Удаляем по объекту недавно созданную сладость и снова перерасчет
-        System.out.println("Удаляем по объекту недавно созданную сладость и снова перерасчет|n");
+        System.out.println("Удаляем по объекту недавно созданную сладость и снова перерасчет\n");
         box.removeSweet(banana);
+        box.printBoxWeight();
+        box.printBoxPrice();
+        System.out.println();
+
+        // Меняем вес коробки и оптимизируем
+        System.out.println("Меняем вес коробки и оптимизируем\n");
+        box.changeBoxWeight(1000);
+        box.printSweets();
+        box.printBoxWeight();
+        box.printBoxPrice();
+        System.out.println();
+
+        // Меняем цену коробки и оптимизируем
+        System.out.println("Меняем цену коробки и оптимизируем\n");
+        box.changeBoxPrice(550);
+        box.printSweets();
         box.printBoxWeight();
         box.printBoxPrice();
         System.out.println();

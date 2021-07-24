@@ -5,6 +5,10 @@ public abstract class Sweets {
     private int price;
 
     public Sweets() {
+        this.id = 0;
+        this.name = "";
+        this.weight = 0;
+        this.price = 0;
     }
 
     public Sweets(int id, String name, int weight, int price) {
