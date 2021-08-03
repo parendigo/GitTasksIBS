@@ -54,51 +54,52 @@ public class ParseFileJson {
             }
             System.out.println("Number of outdated securities is " + count + "\n");
 
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("Введите дату или код валюты");
+            while (true) {
+                Scanner scanner = new Scanner(System.in);
+                System.out.println("Введите дату или код валюты. Type exit to finish the program.");
 
-            String input = scanner.nextLine();
-            Pattern patternDate = Pattern.compile("^(?:(?:31(\\/|-|\\.)(?:0?[13578]|1[02]))\\1|(?:(?:29|30)(\\/|-|\\.)" +
-                    "(?:0?[1,3-9]|1[0-2])\\2))(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$|^(?:29(\\/|-|\\.)0?2\\3" +
-                    "(?:(?:(?:1[6-9]|[2-9]\\d)?(?:0[48]|[2468][048]|[13579][26])|" +
-                    "(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\\d|2[0-8])(\\/|-|\\.)" +
-                    "(?:(?:0?[1-9])|(?:1[0-2]))\\4(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$");
-            Matcher matcher = patternDate.matcher(input);
+                String input = scanner.nextLine();
+                Pattern patternDate = Pattern.compile("([0-9]{1,2}[.,/,,]{1}[0-9]{2}[.,/,,]{1}([0-9]{2}|[0-9]{4}))|");
+                Matcher matcher = patternDate.matcher(input);
+                if (input.equals("exit")) {
+                    break;
+                }
 
-            // По запросу пользователя выводим название организации и ее дату основания, если дата позже даты инпута
-            if (matcher.find()) {
-                System.out.println("По запросу пользователя выводим название организации и ее дату основания, " +
-                        "если дата позже даты инпута:");
-                Iterator iterator3 = companies.iterator();
-                while (iterator3.hasNext()) {
-                    JSONObject innerObj = (JSONObject) iterator3.next();
-                    if (checkDate((String) innerObj.get("founded"), input) == true) {
-                        System.out.println("Name: " + innerObj.get("name") + ", date: " + innerObj.get("founded"));
+                // По запросу пользователя выводим название организации и ее дату основания, если дата позже даты инпута
+                if (matcher.find()) {
+                    System.out.println("По запросу пользователя выводим название организации и ее дату основания, " +
+                            "если дата позже даты инпута:");
+                    Iterator iterator3 = companies.iterator();
+                    while (iterator3.hasNext()) {
+                        JSONObject innerObj = (JSONObject) iterator3.next();
+                        if (checkDate((String) innerObj.get("founded"), input) == true) {
+                            System.out.println("Name: " + innerObj.get("name") + ", date: " + innerObj.get("founded"));
+                        }
                     }
                 }
-            }
 
-            Pattern patternCode = Pattern.compile("[A-Z]{2,3}");
-            matcher = patternCode.matcher(input);
+                Pattern patternCode = Pattern.compile("[A-Z]{2,3}");
+                matcher = patternCode.matcher(input);
 
-            // По запросу пользователя выведем id компании е все коды ее ценных бумаг, содержащих указанную валюту
-            if (matcher.find()) {
-                System.out.println("По запросу пользователя выведем id компании е все коды ее ценных бумаг, " +
-                        "содержащих указанную валюту:");
-                Iterator iterator4 = companies.iterator();
-                while (iterator4.hasNext()) {
-                   JSONObject innerObj = (JSONObject) iterator4.next();
-                    System.out.println("Company ID: " + innerObj.get("id"));
-                            JSONArray securities = (JSONArray) innerObj.get("securities");
-                    Iterator i = securities.iterator();
-                  while (i.hasNext()) {
-                     JSONObject iObj = (JSONObject) i.next();
-                      JSONArray currency = (JSONArray) iObj.get("currency");
-                       for (Object cur : currency) {
-                           if (input.equals(cur)) {
-                               System.out.printf("Security code: %s\n", iObj.get("code"));
-                           }
-                      }
+                // По запросу пользователя выведем id компании е все коды ее ценных бумаг, содержащих указанную валюту
+                if (matcher.find()) {
+                    System.out.println("По запросу пользователя выведем id компании е все коды ее ценных бумаг, " +
+                            "содержащих указанную валюту:");
+                    Iterator iterator4 = companies.iterator();
+                    while (iterator4.hasNext()) {
+                        JSONObject innerObj = (JSONObject) iterator4.next();
+                        System.out.println("Company ID: " + innerObj.get("id"));
+                        JSONArray securities = (JSONArray) innerObj.get("securities");
+                        Iterator i = securities.iterator();
+                        while (i.hasNext()) {
+                            JSONObject iObj = (JSONObject) i.next();
+                            JSONArray currency = (JSONArray) iObj.get("currency");
+                            for (Object cur : currency) {
+                                if (input.equals(cur)) {
+                                    System.out.printf("Security code: %s\n", iObj.get("code"));
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -136,11 +137,11 @@ public class ParseFileJson {
         } else
             parsedDate = founded;
         LocalDate foundedDate = LocalDate.parse(parsedDate, europeanDateFormatter);
-        parsedDate = null;
-        in = in.replaceAll("[/]", ".");
+        in = in.replaceAll("[/, ,]", ".");
         if (in.length() < 10) {
             parsedDate = in.substring(0, 6) + "19" + in.substring(6, in.length());
-        }
+        } else
+            parsedDate = in;
         LocalDate inputDate = LocalDate.parse(parsedDate, europeanDateFormatter);
         return ChronoUnit.DAYS.between(inputDate, foundedDate) <= 0 ? false : true;
     }
