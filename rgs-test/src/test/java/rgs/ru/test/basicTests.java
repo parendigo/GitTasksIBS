@@ -1,24 +1,36 @@
 package rgs.ru.test;
 
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
 
-public class Main {
+public class basicTests {
 
-    public static void main (String[] args) throws InterruptedException {
-
+    WebDriver  driver;
+    @Before
+    public void BeforeTest () {
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--disable-notifications");
         System.setProperty("webdriver.chrome.driver", "src/test/resources/chromedriver.exe");
-        WebDriver  driver = new ChromeDriver();
+        driver = new ChromeDriver();
         driver.manage().window().maximize();
-        driver.manage().timeouts().pageLoadTimeout(20, TimeUnit.SECONDS);
-        driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-
+        driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
         driver.navigate().to("https://www.rgs.ru/");
+    }
+
+    @Test
+    public void insuranceRequestTest () {
+
         try {
 
             // Кликаем на меню
@@ -40,9 +52,12 @@ public class Main {
             clickField("//*[@id=\"main-content\"]/div[3]/div/div[1]/div/div/a[1]", driver);
 
             // Проверяем наличие заголовка "Добровольное медицинское страхование"
+
             try {
-                driver.findElement(By.xpath("//div[contains(@class,'col-rgs-content-center')]" +
+                WebElement insuranceTitle = driver.findElement(By.xpath("//div[contains(@class,'col-rgs-content-center')]" +
                         "//h1[contains(text(),'Добровольное медицинское страхование')]"));
+                Assert.assertEquals("No such title: Добровольное медицинское страхование",
+                        "Добровольное медицинское страхование", insuranceTitle.getText());
             } catch (NoSuchElementException e) {
                 System.out.println("No such element: Добровольное медицинское страхование");
             }
@@ -51,13 +66,7 @@ public class Main {
             clickField("//div[contains(@class,'rgs-context-bar')]//a[contains(text(),'тправить заявку')]", driver);
 
             /* Заполняем все поля */
-            // Ловим Поп-ап
-//            Thread.sleep(5000);
-            try {
-                clickField("/html/body/div/div[11]/button", driver);
-            } catch (org.openqa.selenium.NoSuchElementException e) {
-                e.getMessage();
-            }
+
             // Ф.И.О
             fillField("//*[@id=\"applicationForm\"]/div[2]/div[1]/input", "Фамилия", driver);
             fillField("//*[@id=\"applicationForm\"]/div[2]/div[2]/input", "Имя", driver);
@@ -86,30 +95,46 @@ public class Main {
 
             // Првоеряем у поля почты ошибку
             try {
-                driver.findElement(By.xpath("//*[@id=\"applicationForm\"]/div[2]/div[6]/div/label/span"));
+                WebElement emailError = driver.findElement(By.xpath("//*[@id=\"applicationForm\"]/div[2]/div[6]/div/label/span"));
+                Assert.assertEquals("No email error", emailError.getText(), "Введите адрес электронной почты");
             } catch (org.openqa.selenium.NoSuchElementException e) {
-                System.out.println("No email Error");
+                System.out.println(e.getMessage());
             }
         } catch (InvalidSelectorException e) {
             System.out.println("Bad xpath");
-        } finally {
-            Thread.sleep(5000);
-            driver.quit();
         }
     }
-    public static void clickField (String xpath, WebDriver driver) {
-        WebElement element = driver.findElement(By.xpath(xpath));
-        element.click();
+
+    @After
+    public void afterTest () {
+        driver.quit();
     }
 
-    public static void fillField (String xpath, String str, WebDriver driver) {
-        WebElement element = driver.findElement(By.xpath(xpath));
-        element.sendKeys(str);
+    public void clickField (String xpath, WebDriver driver) {
+        try {
+            WebElement element = driver.findElement(By.xpath(xpath));
+            element.click();
+        } catch (org.openqa.selenium.NoSuchElementException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
-    public  static void clickAndFillField (String xpath, String str, WebDriver driver) {
-        WebElement element = driver.findElement(By.xpath(xpath));
-        element.click();
-        element.sendKeys(str);
+    public void fillField (String xpath, String str, WebDriver driver) {
+        try {
+            WebElement element = driver.findElement(By.xpath(xpath));
+            element.sendKeys(str);
+        } catch (org.openqa.selenium.NoSuchElementException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void clickAndFillField (String xpath, String str, WebDriver driver) {
+        try {
+            WebElement element = driver.findElement(By.xpath(xpath));
+            element.click();
+            element.sendKeys(str);
+        } catch (org.openqa.selenium.NoSuchElementException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
